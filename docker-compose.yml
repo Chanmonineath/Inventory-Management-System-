@@ -1,0 +1,44 @@
+services:
+  auth:
+    build: ./auth
+    ports:
+      - "5002:5002"
+    env_file:
+      - ./auth/.env
+    restart: unless-stopped
+
+  inventory:
+    build: ./inventory
+    ports:
+      - "4003:4003"
+    env_file:
+      - ./inventory/.env
+    restart: unless-stopped
+
+  sales:
+    build: ./sales
+    ports:
+      - "4004:4004"
+    env_file:
+      - ./sales/.env
+    environment:
+      INVENTORY_SERVICE_URL: http://inventory:4003
+    depends_on:
+      - inventory
+    restart: unless-stopped
+
+  gateway:
+    build: ./gateway
+    ports:
+      - "4000:4000"
+    env_file:
+      - ./gateway/.env
+    environment:
+      AUTH_SERVICE: http://auth:5002
+      INVENTORY_SERVICE: http://inventory:4003
+      SALES_SERVICE: http://sales:4004
+    depends_on:
+      - auth
+      - inventory
+      - sales
+    restart: unless-stopped

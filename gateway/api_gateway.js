@@ -67,6 +67,13 @@ app.use("/sales", authToken, authRole(["Admin", "Staff"]), (req, res) => {
   proxy.web(req, res, { target: process.env.SALES_SERVICE });
 });
 
+proxy.on("error", (err, req, res) => {
+  console.error("Proxy error:", err.message);
+  if (!res.headersSent) {
+    res.status(502).json({ message: "Upstream service unavailable" });
+  }
+});
+
 app.listen(4000, () => {
   console.log("API Gateway running on PORT 4000");
 });
