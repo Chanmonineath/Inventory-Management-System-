@@ -33,8 +33,8 @@ function authRole(roles = []) {
 
 // Load Balancer — Product Service (round-robin)
 const productInstances = [
-  process.env.PRODUCT_SERVICE_1, // EC2-2 port 3002
-  process.env.PRODUCT_SERVICE_2, // EC2-3 port 3006
+  process.env.PRODUCT_SERVICE_1,
+  process.env.PRODUCT_SERVICE_2,
 ];
 let currentIndex = 0;
 
