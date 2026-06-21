@@ -5,6 +5,8 @@ require('dotenv').config();
 const app = express();
 app.use(express.json());
 
+const { authToken, authRole } = require("./auth_middleware.js");
+
 // 1. Connect to MongoDB Atlas Cloud Database
 const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/product_db';
 mongoose.connect(MONGO_URI)
@@ -24,7 +26,7 @@ const Product = mongoose.model('Product', ProductSchema);
 // 3. API Routes
 
 // POST /addproduct - Add a new product to the collection [cite: 366]
-app.post('/addproduct', async (req, res) => {
+app.post('/addproduct', authToken, authRole(["Admin", "Staff"]), async (req, res) => {
   try {
     const newProduct = new Product(req.body);
     await newProduct.save();
@@ -35,7 +37,7 @@ app.post('/addproduct', async (req, res) => {
 });
 
 // GET /searchproduct - View all or filter products dynamically by name string [cite: 367]
-app.get('/searchproduct', async (req, res) => {
+app.get('/searchproduct', authToken, authRole(["Admin", "Staff"]), async (req, res) => {
   try {
     const { name } = req.query;
     // If a search name is provided, search using a case-insensitive regular expression
@@ -48,7 +50,7 @@ app.get('/searchproduct', async (req, res) => {
 });
 
 // DELETE /deleteproduct/:id - Remove a single product utilizing its document ID parameter [cite: 368]
-app.delete('/deleteproduct/:id', async (req, res) => {
+app.delete('/deleteproduct/:id', authToken, authRole(["Admin", "Staff"]), async (req, res) => {
   try {
     const deletedProduct = await Product.findByIdAndDelete(req.params.id);
     if (!deletedProduct) {
