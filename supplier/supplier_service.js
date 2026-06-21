@@ -5,6 +5,8 @@ require('dotenv').config();
 const app = express();
 app.use(express.json());
 
+const { authToken, authRole } = require("./auth_middleware.js");
+
 // 1. Connect to the Supplier Database space
 const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/supplier_db';
 mongoose.connect(MONGO_URI)
@@ -22,7 +24,7 @@ const Supplier = mongoose.model('Supplier', SupplierSchema);
 // 3. API Endpoints
 
 // POST /addsupplier
-app.post('/addsupplier', async (req, res) => {
+app.post('/addsupplier', authToken, authRole(["Admin"]), async (req, res) => {
   try {
     const newSupplier = new Supplier(req.body);
     await newSupplier.save();
@@ -33,7 +35,7 @@ app.post('/addsupplier', async (req, res) => {
 });
 
 // GET /searchsupplier
-app.get('/searchsupplier', async (req, res) => {
+app.get('/searchsupplier', authToken, authRole(["Admin"]), async (req, res) => {
   try {
     const { name } = req.query;
     const queryFilter = name ? { name: new RegExp(name, 'i') } : {};
@@ -45,7 +47,7 @@ app.get('/searchsupplier', async (req, res) => {
 });
 
 // DELETE /deletesupplier/:id
-app.delete('/deletesupplier/:id', async (req, res) => {
+app.delete('/deletesupplier/:id', authToken, authRole(["Admin"]), async (req, res) => {
   try {
     const deletedSupplier = await Supplier.findByIdAndDelete(req.params.id);
     if (!deletedSupplier) return res.status(404).json({ message: 'Supplier not found' });

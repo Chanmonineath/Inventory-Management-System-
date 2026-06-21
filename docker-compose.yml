@@ -27,6 +27,30 @@ services:
       - inventory
     restart: unless-stopped
 
+  product1:
+    build: ./product
+    ports:
+      - "4001:4001"
+    env_file:
+      - ./product/.env
+    restart: unless-stopped
+
+  product2:
+    build: ./product
+    ports:
+      - "4006:4001"
+    env_file:
+      - ./product/.env
+    restart: unless-stopped
+
+  supplier:
+    build: ./supplier
+    ports:
+      - "4002:4002"
+    env_file:
+      - ./supplier/.env
+    restart: unless-stopped
+
   gateway:
     build: ./gateway
     ports:
@@ -37,8 +61,14 @@ services:
       AUTH_SERVICE: http://auth:5002
       INVENTORY_SERVICE: http://inventory:4003
       SALES_SERVICE: http://sales:4004
+      PRODUCT_SERVICE_1: http://product1:4001
+      PRODUCT_SERVICE_2: http://product2:4001
+      SUPPLIER_SERVICE: http://supplier:4002
     depends_on:
       - auth
       - inventory
       - sales
+      - product1
+      - product2
+      - supplier
     restart: unless-stopped
