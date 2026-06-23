@@ -57,6 +57,13 @@ services:
       - "4000:4000"
     env_file:
       - ./gateway/.env
+    environment:
+      AUTH_SERVICE: http://auth:5002
+      INVENTORY_SERVICE: http://inventory:4003
+      SALES_SERVICE: http://sales:4004
+      PRODUCT_SERVICE_1: http://product1:4001
+      PRODUCT_SERVICE_2: http://product2:4001
+      SUPPLIER_SERVICE: http://supplier:4002
     depends_on:
       - auth
       - inventory
