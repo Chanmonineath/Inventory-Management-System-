@@ -1,0 +1,42 @@
+# Shared logging volume.
+# Every microservice Deployment mounts this same PVC at /var/log/smartstock
+# and writes its own <service-name>.log file into it (see logger.js in each
+# service). The log-viewer Deployment mounts the identical PVC read-only and
+# serves the directory over HTTP, proving the data written by one container
+# is visible from a completely different container/pod.
+#
+# hostPath + ReadWriteMany works because Minikube is a single-node cluster.
+# On a real multi-node cluster you would swap this for an NFS/EFS-backed
+# StorageClass to get genuine cross-node ReadWriteMany semantics.
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: smartstock-logs-pv
+  namespace: smartstock
+  labels:
+    app: smartstock-logs
+spec:
+  capacity:
+    storage: 500Mi
+  accessModes:
+    - ReadWriteMany
+  storageClassName: manual
+  hostPath:
+    path: /mnt/data/smartstock-logs
+    type: DirectoryOrCreate
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: smartstock-logs-pvc
+  namespace: smartstock
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: manual
+  resources:
+    requests:
+      storage: 500Mi
+  selector:
+    matchLabels:
+      app: smartstock-logs

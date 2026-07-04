@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: smartstock-config
+  namespace: smartstock
+data:
+  LOG_DIR: "/var/log/smartstock"
+
+  AUTH_SERVICE: "http://auth-service:5002"
+  SUPPLIER_SERVICE: "http://supplier-service:4002"
+  INVENTORY_SERVICE: "http://inventory-service:4003"
+  SALES_SERVICE: "http://sales-service:4004"
+  PRODUCT_SERVICE_1: "http://product1-service:4001"
+  PRODUCT_SERVICE_2: "http://product2-service:4001"
+
+  # Used internally by the Sales service to call Inventory's /internal/reduce
+  INVENTORY_SERVICE_URL: "http://inventory-service:4003"
