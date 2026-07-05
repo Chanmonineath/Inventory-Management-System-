@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gateway
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gateway
+  template:
+    metadata:
+      labels:
+        app: gateway
+    spec:
+      containers:
+        - name: gateway
+          image: smartstock-gateway:1.0
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 4000
+          env:
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: smartstock-secret
+                  key: JWT_SECRET
+            - name: AUTH_SERVICE
+              value: "http://auth:5002"
+            - name: PRODUCT_SERVICE_1
+              value: "http://product:3002"
+            - name: PRODUCT_SERVICE_2
+              value: "http://product:3002"
+            - name: SUPPLIER_SERVICE
+              value: "http://supplier:3003"
+            - name: INVENTORY_SERVICE
+              value: "http://inventory:4003"
+            - name: SALES_SERVICE
+              value: "http://sales:4004"

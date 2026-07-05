@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: auth
+  template:
+    metadata:
+      labels:
+        app: auth
+    spec:
+      containers:
+        - name: auth
+          image: smartstock-auth:1.0
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 5002
+          env:
+            - name: MONGO_URI
+              value: "mongodb://mongo:27017/smartstock_auth"
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: smartstock-secret
+                  key: JWT_SECRET
