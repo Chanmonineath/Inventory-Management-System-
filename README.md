@@ -137,3 +137,27 @@ DELETE http://localhost:4000/sales/deletesale   { "id" }   (Admin only)
 - Inventory's `PUT /internal/reduce` has no auth check at all (by design, for internal service-to-service use), so it's only safe if the inventory service's network access is actually restricted at the infrastructure level.
 - `sales/createsale` reduces inventory stock, then creates the Sale record — if the Sale write fails after stock was already reduced, there's no rollback.
 - `product`/`supplier`'s `searchproduct`/`searchsupplier` build a `RegExp` directly from the `name` query param with no escaping — a crafted value could throw or behave oddly.
+
+## Sprint Update: Kubernetes Integration & Deployment Contract
+
+### Accomplishments
+- **API Gateway & Auth Integration**: Hooked up `gateway` and `auth` services into the new Kubernetes manifests (`k8s-v2/`).
+- **Ingress Configuration**: Configured `ingress.yaml` routing with class `nginx` and host `aupp.com` to direct paths (`/auth`, `/product`, `/supplier`, `/inventory`, `/sales`) to the API Gateway.
+- **Service Security**: Configured `secret.yaml` to provision `JWT_SECRET` dynamically via `secretKeyRef` to the gateway and auth services.
+- **Local Scripts**: Created workspace placeholder for automation (`deploy.sh`).
+
+### Deployment Contract & Pending Requirements (Blockers)
+| Service | Manifest Status | Blockers / Pending Team Inputs | Impact |
+|---|---|---|---|
+| **Authentication Service** | Configured ([auth-deployment.yaml](file:///Users/user/Desktop/InventoryProject/k8s-v2/auth-deployment.yaml), [auth-service.yaml](file:///Users/user/Desktop/InventoryProject/k8s-v2/auth-service.yaml)) | Requires production `MONGO_URI` secret. | Running on hardcoded fallback database. |
+| **API Gateway** | Configured ([gateway-deployment.yaml](file:///Users/user/Desktop/InventoryProject/k8s-v2/gateway-deployment.yaml), [gateway-service.yaml](file:///Users/user/Desktop/InventoryProject/k8s-v2/gateway-service.yaml)) | Waiting on final configuration endpoints and verified production `JWT_SECRET`. | Integrates with auth/downstream. |
+| **Product Service** | **Missing Manifests** | Waiting for Product team to provide production `MONGO_URI` and preferred replica/port settings. | Gateway references `http://product:3002`, but service is undeployed. |
+| **Supplier Service** | **Missing Manifests** | Waiting for Supplier team to provide production `MONGO_URI`. | Gateway references `http://supplier:3003`, but service is undeployed. |
+| **Inventory Service** | **Missing Manifests** | Waiting for Inventory team to provide production `MONGO_URI`. | Gateway references `http://inventory:4003`, but service is undeployed. |
+| **Sales Service** | **Missing Manifests** | Waiting for Sales team to provide database connection string (`MONGO_URI`) and internal `INVENTORY_SERVICE_URL`. | Gateway references `http://sales:4004`, but service is undeployed. |
+| **Database (MongoDB)** | **Missing Manifests** | Waiting for infra/team alignment on dedicated shared MongoDB or individual DB deployments. | Downstream microservices cannot connect to database. |
+
+### Next Steps in `k8s-v2/`
+1. **Define a ConfigMap & Secret Template**: Create a template/guide for the other teams (Product, Supplier, Inventory, Sales) showing them how to write their own K8s Deployment manifests utilizing our shared `smartstock-secret` configuration.
+2. **Draft Database Manifests**: Proactively provision a local/development Mongo StatefulSet/Deployment manifest to allow end-to-end integration testing within the Kubernetes cluster before production secrets are provided.
+
