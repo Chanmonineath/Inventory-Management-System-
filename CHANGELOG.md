@@ -5,7 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.0] - 2026-07-07 — ✅ Mock Integration Test PASSED
+
+### Test Results
+All 5 integration checks passed on local Minikube cluster:
+- ✅ All deployments `1/1 Ready` — auth, gateway, mock-db — 0 crashes, 0 restarts
+- ✅ Secret injection working — `smartstock-secret` delivers `JWT_SECRET` + `MONGO_URI` to pods
+- ✅ Internal DNS working — `auth` pod resolves `mongodb://mock-db:27017` via CoreDNS
+- ✅ Ingress routing accepted — `/auth`, `/product`, `/supplier`, `/inventory`, `/sales` → Gateway
+- ✅ `deploy.sh --mock` runs end-to-end without error
+
+See full report: [`k8s-v2/MOCK-TEST-RESULTS.md`](k8s-v2/MOCK-TEST-RESULTS.md)
+
+---
+
 ## [0.1.0] - 2026-07-07
+
 
 ### Added
 - Created `k8s-v2/` containing Kubernetes manifests:
