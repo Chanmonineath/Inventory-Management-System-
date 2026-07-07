@@ -20,7 +20,10 @@ spec:
             - containerPort: 5002
           env:
             - name: MONGO_URI
-              value: "mongodb://mongo:27017/smartstock_auth"
+              valueFrom:
+                secretKeyRef:
+                  name: smartstock-secret
+                  key: MONGO_URI
             - name: JWT_SECRET
               valueFrom:
                 secretKeyRef:

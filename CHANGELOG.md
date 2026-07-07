@@ -14,6 +14,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `ingress.yaml` to route external traffic on `aupp.com` to the API Gateway.
   - `secret.yaml` for managing common environment secrets (e.g. `JWT_SECRET`).
   - `deploy.sh` script placeholder for deployment automation.
+  - `mock-mongodb.yaml` deployment and service for local database integration testing.
+  - `TEMPLATE-DEPLOYMENT.yaml` to serve as a standardized guide for other microservice teams.
+
+### Refactored
+- `deploy.sh`: Upgraded arguments parsing with `case` loops, auto-detects/deploys the mock database when running in mock mode.
+- `auth-deployment.yaml`: Refactored `MONGO_URI` to be loaded dynamically from `smartstock-secret` instead of being hardcoded.
+- `secret.yaml`: Added `MONGO_URI` placeholder configuration.
 
 ### Git Sync Info (Recent Commits)
 - `a2a239b` Merge pull request #2 from Chanmonineath/member-a-k8s-v2
