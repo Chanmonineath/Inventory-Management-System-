@@ -3,8 +3,33 @@
 
 set -e
 
-echo "Applying shared Kubernetes secrets..."
-kubectl apply -f secret.yaml
+# Determine secret file to use
+SECRET_FILE="secret.yaml"
+USE_MOCK=false
+
+for arg in "$@"; do
+  if [ "$arg" == "--mock" ] || [ "$arg" == "-m" ]; then
+    USE_MOCK=true
+  fi
+done
+
+if [ "$USE_MOCK" = true ]; then
+  SECRET_FILE="mock-secret.yaml"
+  echo "⚠️ Using mock secrets (mock-secret.yaml)..."
+elif [ ! -f "secret.yaml" ]; then
+  echo "⚠️ secret.yaml not found. Falling back to mock-secret.yaml..."
+  SECRET_FILE="mock-secret.yaml"
+else
+  echo "🔒 Using production secrets (secret.yaml)..."
+fi
+
+if [ ! -f "$SECRET_FILE" ]; then
+  echo "❌ Error: Neither secret.yaml nor mock-secret.yaml could be found!"
+  exit 1
+fi
+
+echo "Applying Kubernetes secrets from $SECRET_FILE..."
+kubectl apply -f "$SECRET_FILE"
 
 echo "Deploying Authentication service..."
 kubectl apply -f auth-service.yaml
@@ -17,4 +42,4 @@ kubectl apply -f gateway-deployment.yaml
 echo "Configuring Ingress rules..."
 kubectl apply -f ingress.yaml
 
-echo "Done! Auth and Gateway services have been applied. Please ensure downstream services (Product, Supplier, Inventory, Sales) are configured and deployed."
+echo "Done! Auth and Gateway services have been applied using $SECRET_FILE."
