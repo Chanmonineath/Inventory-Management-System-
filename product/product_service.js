@@ -23,6 +23,13 @@ const ProductSchema = new mongoose.Schema({
 });
 const Product = mongoose.model('Product', ProductSchema);
 
+// Drop legacy unique index if it exists to prevent E11000 duplicate key error
+mongoose.connection.once('open', () => {
+  Product.collection.dropIndex('id_1')
+    .then(() => console.log('Successfully dropped unique id_1 index from products'))
+    .catch(err => console.log('No unique id_1 index to drop:', err.message));
+});
+
 // 3. API Routes
 
 // POST /addproduct - Add a new product to the collection [cite: 366]

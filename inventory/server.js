@@ -7,6 +7,14 @@ app.use(express.json());
 const Inventory = require("./inventory_schema.js");
 const { authToken, authRole } = require("./auth_middleware.js");
 
+// Drop legacy unique index if it exists to prevent E11000 duplicate key error
+const mongoose = require("mongoose");
+mongoose.connection.once("open", () => {
+  Inventory.collection.dropIndex("id_1")
+    .then(() => console.log("Successfully dropped unique id_1 index from inventory"))
+    .catch(err => console.log("No unique id_1 index to drop from inventory:", err.message));
+});
+
 // POST /addstock — Admin only
 app.post("/addstock", authToken, authRole(["Admin"]), async (req, res) => {
   try {

@@ -8,6 +8,14 @@ app.use(express.json());
 const Sale = require("./sales_schema.js");
 const { authToken, authRole } = require("./auth_middleware.js");
 
+// Drop legacy unique index if it exists to prevent E11000 duplicate key error
+const mongoose = require("mongoose");
+mongoose.connection.once("open", () => {
+  Sale.collection.dropIndex("id_1")
+    .then(() => console.log("Successfully dropped unique id_1 index from sales"))
+    .catch(err => console.log("No unique id_1 index to drop from sales:", err.message));
+});
+
 const INVENTORY_SERVICE_URL =
   process.env.INVENTORY_SERVICE_URL || "http://localhost:4003";
 
