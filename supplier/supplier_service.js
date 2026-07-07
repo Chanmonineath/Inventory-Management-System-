@@ -21,6 +21,13 @@ const SupplierSchema = new mongoose.Schema({
 });
 const Supplier = mongoose.model('Supplier', SupplierSchema);
 
+// Drop legacy unique index if it exists to prevent E11000 duplicate key error
+mongoose.connection.once('open', () => {
+  Supplier.collection.dropIndex('id_1')
+    .then(() => console.log('Successfully dropped unique id_1 index from suppliers'))
+    .catch(err => console.log('No unique id_1 index to drop:', err.message));
+});
+
 // 3. API Endpoints
 
 // POST /addsupplier
