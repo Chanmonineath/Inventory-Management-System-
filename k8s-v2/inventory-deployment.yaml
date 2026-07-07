@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: inventory
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: inventory
+  template:
+    metadata:
+      labels:
+        app: inventory
+    spec:
+      containers:
+        - name: inventory
+          image: smartstock-inventory:1.0
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 3004
+          env:
+            - name: MONGO_URI
+              value: "mongodb://mongo:27017/smartstock_inventory"
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: smartstock-secret
+                  key: JWT_SECRET
+            - name: PORT
+              value: "3004"
