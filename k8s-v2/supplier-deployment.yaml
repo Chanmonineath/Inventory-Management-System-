@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: supplier
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: supplier
+  template:
+    metadata:
+      labels:
+        app: supplier
+    spec:
+      containers:
+        - name: supplier
+          image: smartstock-supplier:1.0
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 3003
+          env:
+            - name: MONGO_URI
+              value: "mongodb://mongo:27017/smartstock_supplier"
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: smartstock-secret
+                  key: JWT_SECRET
+            - name: PORT
+              value: "3003"
