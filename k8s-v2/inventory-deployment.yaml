@@ -17,7 +17,7 @@ spec:
           image: smartstock-inventory:1.0
           imagePullPolicy: Never
           ports:
-            - containerPort: 3004
+            - containerPort: 4003
           env:
             - name: MONGO_URI
               value: "mongodb://mongo:27017/smartstock_inventory"
@@ -26,5 +26,5 @@ spec:
                 secretKeyRef:
                   name: smartstock-secret
                   key: JWT_SECRET
-            - name: PORT
-              value: "3004"
+            - name: INVENTORY_PORT
+              value: "4003"
