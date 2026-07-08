@@ -1,31 +1,32 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: auth
+  name: sales
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: auth
+      app: sales
   template:
     metadata:
       labels:
-        app: auth
+        app: sales
     spec:
       containers:
-        - name: auth
-          image: smartstock-auth:1.0
+        - name: sales
+          image: smartstock-sales:1.0
           imagePullPolicy: Never
           ports:
-            - containerPort: 5002
+            - containerPort: 4004
           env:
             - name: MONGO_URI
-              valueFrom:
-                secretKeyRef:
-                  name: smartstock-secret
-                  key: MONGO_URI
+              value: "mongodb://mongo:27017/smartstock_sales"
             - name: JWT_SECRET
               valueFrom:
                 secretKeyRef:
                   name: smartstock-secret
                   key: JWT_SECRET
+            - name: INVENTORY_SERVICE
+              value: "http://inventory:4003"
+            - name: SALES_PORT
+              value: "4004"
