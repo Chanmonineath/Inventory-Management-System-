@@ -26,7 +26,7 @@ spec:
                 secretKeyRef:
                   name: smartstock-secret
                   key: JWT_SECRET
-            - name: INVENTORY_SERVICE
+            - name: INVENTORY_SERVICE_URL
               value: "http://inventory:4003"
             - name: SALES_PORT
               value: "4004"
