@@ -142,5 +142,8 @@ vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 .vite/
 
+# Local-only Kubernetes secrets
+k8s-v2/secret-LOCALONLY.yaml
+
 # macOS
 .DS_Store
