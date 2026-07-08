@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: smartstock-shared-volume
+spec:
+  restartPolicy: Never
+
+  volumes:
+    - name: shared-dir
+      emptyDir: {}
+
+  containers:
+    - name: nginx-container
+      image: nginx
+      volumeMounts:
+        - name: shared-dir
+          mountPath: /usr/share/nginx/html
+
+    - name: debian-container
+      image: debian
+      volumeMounts:
+        - name: shared-dir
+          mountPath: /shared-dir
+      command: ["/bin/sh", "-c"]
+      args:
+        - |
+          while true; do
+            echo "SmartStock Log - $(date)" >> /shared-dir/index.html;
+            sleep 60;
+          done
